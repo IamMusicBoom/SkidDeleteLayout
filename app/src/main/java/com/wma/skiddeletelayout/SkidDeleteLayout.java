@@ -42,7 +42,7 @@ public class SkidDeleteLayout extends LinearLayout {
         return true;
     }
 
-    float firstX = 0,firstY = 0;
+    float firstX = 0, firstY = 0;
     int distance = 0;
     boolean isShow = false;
 
@@ -55,10 +55,10 @@ public class SkidDeleteLayout extends LinearLayout {
                 firstY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if((firstY = event.getY()) != 0 && Math.abs((firstX - event.getX()))>10){
-                   getParent().requestDisallowInterceptTouchEvent(true);
+                if ((firstY = event.getY()) != 0 && Math.abs((firstX - event.getX())) > 10) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
                 }
-                if(!isShow){
+                if (!isShow) {
                     distance = (int) (firstX - event.getX());
                     if (distance > hideChildWidth) {
                         distance = hideChildWidth;
@@ -66,32 +66,45 @@ public class SkidDeleteLayout extends LinearLayout {
                     if (distance < 0) {
                         distance = 0;
                     }
-                }else{
-                    distance = hideChildWidth+ (int) (firstX - event.getX());
-                    if(distance < 0){
+                } else {
+                    distance = hideChildWidth + (int) (firstX - event.getX());
+                    if (distance < 0) {
                         distance = 0;
                     }
-                    if(distance > hideChildWidth){
+                    if (distance > hideChildWidth) {
                         distance = hideChildWidth;
                     }
                 }
                 scrollTo(distance, 0);
                 break;
             case MotionEvent.ACTION_UP:
-                if(distance == hideChildWidth){ //展示
-                    isShow =true;
-                }else if(distance == 0){//隐藏
+                if (distance == hideChildWidth) { //展示
+                    isShow = true;
+                } else if (distance == 0) {//隐藏
                     isShow = false;
-                }else if (distance >= hideChildWidth/2){//去展示
-                    mScroller.startScroll(distance,0,hideChildWidth-distance,0);
-                    isShow =true;
-                    invalidate();
-                }else if(distance < hideChildWidth/2){//去隐藏
-                    mScroller.startScroll(distance,0,-distance,0);
-                    isShow = false;
-                    invalidate();
                 }
-                if(onShowListener!=null){
+                if (isShow) {
+                    if ((hideChildWidth - distance) >= hideChildWidth / 6) {//去展示
+                        mScroller.startScroll(distance, 0, -distance, 0);
+                        isShow = false;
+                        invalidate();
+                    } else {//去隐藏
+                        mScroller.startScroll(distance, 0, hideChildWidth - distance, 0);
+                        isShow = true;
+                        invalidate();
+                    }
+                } else {
+                    if (distance >= hideChildWidth / 6) {//去展示
+                        mScroller.startScroll(distance, 0, hideChildWidth - distance, 0);
+                        isShow = true;
+                        invalidate();
+                    } else {//去隐藏
+                        mScroller.startScroll(distance, 0, -distance, 0);
+                        isShow = false;
+                        invalidate();
+                    }
+                }
+                if (onShowListener != null) {
                     onShowListener.onShow(isShow);
                 }
                 break;
@@ -124,7 +137,7 @@ public class SkidDeleteLayout extends LinearLayout {
     }
 
 
-    public boolean getIsShow(){
+    public boolean getIsShow() {
         return isShow;
     }
 
@@ -134,15 +147,16 @@ public class SkidDeleteLayout extends LinearLayout {
     }
 
     public OnShowListener onShowListener;
-    public interface OnShowListener{
+
+    public interface OnShowListener {
         void onShow(boolean isShow);
     }
 
-    public void hideOrShow(boolean show){
-        if(!show){
-            scrollTo(0,0);
-        }else{
-            scrollTo(hideChildWidth,0);
+    public void hideOrShow(boolean show) {
+        if (!show) {
+            scrollTo(0, 0);
+        } else {
+            scrollTo(hideChildWidth, 0);
         }
         isShow = show;
     }
